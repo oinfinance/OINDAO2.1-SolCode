@@ -736,7 +736,7 @@ contract OinStake is Owned, WhiteList {
     function claimToken(address holder, address coinAddress) public {
       if (coins[holder] > 0) {
             require(
-                _judgePledgeRate(holder),
+                tokens[holder].mul(orcl.val()).div(coins[holder]) >= params.claimRequirment().mul(1e8),
                 "The current pledge rate does not meet the system pledge rate requirements"
             );
           

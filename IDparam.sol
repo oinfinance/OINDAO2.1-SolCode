@@ -9,6 +9,7 @@ interface IDparam {
     event CoinUpperLimitEvent(uint256 coinUpperLimit);
     event SetTotalTokenEvent(uint256 totalToken);
     event SetTotalCoinEvent(uint256 totalCoin);
+    event ClaimRequirmentEvent(uint256 claimRequirment);
 
     function stakeRate() external view returns (uint256);
     
@@ -19,6 +20,8 @@ interface IDparam {
     function coinUpperLimit() external view returns (uint256);
 
     function cost() external view returns (uint256);
+    
+    function claimRequirment()external view returns (uint256);
 
     function liquidationLine() external view returns (uint256);
 
@@ -37,4 +40,6 @@ interface IDparam {
     function setCoinUpperLimit(uint256 _coinUpperLimit) external;
 
     function setCost(uint256 _cost, uint256 price) external;
+    
+    function setClaimRequirment(uint256 _claimRequirment) external;
 }

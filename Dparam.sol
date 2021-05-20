@@ -21,6 +21,7 @@ contract Dparam is Owned, WhiteList, IDparam {
     uint256 public coinUpperLimit = 5000 * 1e8;
     ///@notice Set the cost of the Stake
     uint256 public cost = 7;
+    uint256 public claimRequirment = 5;
     uint256 public totalToken;
     uint256 public totalCoin;
     event StakeRateEvent(uint256 stakeRate);
@@ -36,6 +37,8 @@ contract Dparam is Owned, WhiteList, IDparam {
     event SetTotalTokenEvent(uint256 totalToken);
     /// @notice Reset totalCoin event
     event SetTotalCoinEvent(uint256 totalCoin);
+    /// @notice Reset claimRequirment event
+    event ClaimRequirmentEvent(uint256 claimRequirment);
 
     /**
      * @notice Construct a new Dparam, owner by msg.sender
@@ -97,6 +100,15 @@ contract Dparam is Owned, WhiteList, IDparam {
     }
 
     /**
+     * @notice Reset claimRequirment
+     * @param _claimRequirment New number of _claimRequirment
+     */
+    function setClaimRequirment(uint256 _claimRequirment) external onlyWhiter {
+        claimRequirment = _claimRequirment;
+        emit ClaimRequirmentEvent(claimRequirment);
+    }
+    
+        /**
      * @notice Reset cost
      * @param _cost New number of _cost
      * @param price New number of price
@@ -106,7 +118,6 @@ contract Dparam is Owned, WhiteList, IDparam {
         stakeRate = cost.mul(1e16).div(price);
         emit CostEvent(cost, price);
     }
-
 
 
     /**
