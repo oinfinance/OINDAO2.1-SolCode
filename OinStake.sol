@@ -532,7 +532,10 @@ contract OinStake is Owned, WhiteList {
                 redundantOin > 0,
                 "There are currently no OIN tokens available to collect"
             );
-            tokenAmount = redundantOin;
+            if(tokenAmount >= redundantOin){
+                 tokenAmount = redundantOin;
+            }
+           
         }
         //当用户cOIN余额不足时，最大可提取出等同cOIN数量的OIN
         if (tokenAmount > cToken.balanceOf(staker)) {
