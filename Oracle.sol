@@ -54,7 +54,7 @@ contract Oracle is Owned, WhiteList {
      */
     function poke(uint256 price) public onlyWhiter {
         require(!esm.isClosed(), "System closed yet.");
-
+        require(price > 0, "The value cannot be 0");
         val = price;
         time = block.timestamp;
         

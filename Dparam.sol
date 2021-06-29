@@ -18,7 +18,7 @@ contract Dparam is Owned, WhiteList, IDparam {
 
     uint256 constant ONE = 1e8;
     ///@notice UpperLimit for COINS for the System.
-    uint256 public coinUpperLimit = 5000 * 1e8;
+    uint256 public coinUpperLimit = 1000000 * 1e8;
     ///@notice Set the cost of the Stake
     uint256 public cost = 7;
     uint256 public claimRequirment = 5;
@@ -95,6 +95,7 @@ contract Dparam is Owned, WhiteList, IDparam {
      * @param _coinUpperLimit New number of coinUpperLimit
      */
     function setCoinUpperLimit(uint256 _coinUpperLimit) external onlyWhiter {
+        require(_coinUpperLimit >= totalCoin,"Sets the hardtop to be less than the current generation");
         coinUpperLimit = _coinUpperLimit;
         emit CoinUpperLimitEvent(coinUpperLimit);
     }

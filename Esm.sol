@@ -35,6 +35,7 @@ contract Esm is Owned, WhiteList {
      * @param _tokenStake Address of tokenStake
      */
     function setupTokenStake(address _tokenStake) public onlyWhiter {
+        require(_tokenStake != address(0), "The address cannot be null");
         tokenStake = ITokenStake(_tokenStake);
     }
 

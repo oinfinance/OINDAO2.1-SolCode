@@ -59,7 +59,6 @@ contract OinStake is Owned, WhiteList {
 
     /**
      * @notice fundsFee array
-     * @param staker fundsFee
      * @param block update blockNumber
      */
 
@@ -112,7 +111,6 @@ contract OinStake is Owned, WhiteList {
     /// @notice The total amount of totalCToken in sys
     uint256 public totalCToken;
 
-    uint256 constant ONE = 10**8;
     address constant pmFeeHolder = 0x1111111111111111111111111111111111111111;
 
     /// @notice Dparam address
@@ -132,14 +130,7 @@ contract OinStake is Owned, WhiteList {
     /// @notice feeToken address
     IERC20 feeToken;
 
-    ///各种事件Events
-    ///@notice Setup params address success
-    event SetupParamsAddress(
-        address esm,
-        address params,
-        address orcl,
-        address feeOrcl
-    );
+
     /// @notice Setup Token&Coin address success
     event SetupCoin(
         address token,
@@ -188,45 +179,7 @@ contract OinStake is Owned, WhiteList {
         _;
     }
 
-    /**
-     * @notice reset Esm,Dapram,Oracle,FundsFeeOracle address.
-     * @param _esm Configuration Esm contract address
-     * @param _param Configuration Dapram contract address
-     * @param _orcl Configuration Oracle contract address
-     * @param _feeOrcl Configuration FunsFeeOracle contract address
-     */
-    function setupParamsAddress(
-        address _esm,
-        address _param,
-        address _orcl,
-        address _feeOrcl
-    ) public onlyWhiter {
-        esm = IESM(_esm);
-        params = IDparam(_param);
-        orcl = IOracle(_orcl);
-        feeOrcl = FeeOracle(_feeOrcl);
-        emit SetupParamsAddress(_esm, _param, _orcl, _feeOrcl);
-    }
 
-    /**
-     * @notice get Dparam address.
-     * @return Esm contract address
-     * @return Dparam contract address
-     * @return Oracle contract address
-     * @return FundsFeeOracle contract address
-     */
-    function getParamsAddr()
-        public
-        view
-        returns (
-            address esm,
-            address param,
-            address orcl,
-            address feeOrcl
-        )
-    {
-        return (address(esm), address(param), address(orcl), address(feeOrcl));
-    }
 
     /**
      * @notice Get block number now
@@ -265,7 +218,7 @@ contract OinStake is Owned, WhiteList {
     /**
      * @notice Init RewardCoin array
      */
-    function InitRewardCoin() public onlyWhiter {
+    function InitRewardCoin() internal onlyWhiter {
         //Fist reward coin information
         addRewardCoin(
             0xD78B0A147EE7879F14a7CEF25761CB58ED978681,
@@ -344,7 +297,7 @@ contract OinStake is Owned, WhiteList {
 
     /**
      * @notice Get the number of debt by the `account`
-     * @param account token address
+     * @param account address
      * @return (tokenAmount,coinAmount)
      */
     function debtOf(address account) public view returns (uint256, uint256) {
@@ -352,9 +305,9 @@ contract OinStake is Owned, WhiteList {
     }
 
     /**
-     * @notice Get the number of debt by the `account`
+     * @notice Obtain the amount required for stake
      * @param coinAmount The amount that staker want to get stableToken
-     * @return The amount that staker want to transfer token.
+     * @return The number the staker wants to stake
      */
     function getInputToken(uint256 coinAmount)
         public
@@ -375,8 +328,6 @@ contract OinStake is Owned, WhiteList {
         view
         returns (uint256 value)
     {
-        FundsFeeState storage FundsFeeState = fundsFeeStates[staker];
-        uint256 fundsRate = params.fundsRate();
         uint256 blockNumber = getBlockNumber();
         uint256 deltBlock = blockNumber.sub(fundsFeeStates[staker].block);
         uint256 fundsTokenAmount =
@@ -388,7 +339,7 @@ contract OinStake is Owned, WhiteList {
 
     /**
      * @notice Get User fundsfee
-     * @param  staker token address
+     * @param  staker address
      * @return The amount of fundsfee that staker need to pay.
      */
     function getFundsFee(address staker) public view returns (uint256 value) {
@@ -397,7 +348,7 @@ contract OinStake is Owned, WhiteList {
 
     /**
      * @notice Determine whether the current pledge rate reaches the pledge rate
-     * @param staker token address
+     * @param staker address
      */
     function _judgePledgeRate(address staker) internal returns (bool) {
         if (coins[staker] > 0) {
@@ -580,7 +531,7 @@ contract OinStake is Owned, WhiteList {
             uint256 fundsTokenAmount = _getFundsFee(from);
             //Calculation of feeToken Amount 计算应付手续费的数量
             uint256 feeTokenAmount =
-                fundsTokenAmount.mul(orcl.val()).div(feeOrcl.val());
+                fundsTokenAmount.mul(1e8).div(feeOrcl.val());
             require(
                 feeToken.balanceOf(from) >= feeTokenAmount,
                 "Insufficient balance of stability token in current account"
@@ -614,7 +565,7 @@ contract OinStake is Owned, WhiteList {
         uint256 fundsTokenAmount = _getFundsFee(from);
         //Calculation of feeToken Amount 计算应付手续费的数量
         uint256 feeTokenAmount =
-            fundsTokenAmount.mul(orcl.val()).div(feeOrcl.val());
+            fundsTokenAmount.mul(1e8).div(feeOrcl.val());
         require(
             feeToken.balanceOf(from) >= feeTokenAmount,
             "Insufficient balance of stability token in current account"
@@ -779,6 +730,7 @@ contract OinStake is Owned, WhiteList {
         external
         onlyOwner
     {
+        require(amount > 0, "The value cannot be 0");
         uint256 rewardCoinSub = rewardCoinIndex[coinAddress];
         rewardCoins[rewardCoinSub].coin.transferFrom(
             msg.sender,
@@ -803,6 +755,7 @@ contract OinStake is Owned, WhiteList {
         uint256 amount,
         address coinAddress
     ) external onlyOwner {
+        require(amount > 0, "The value cannot be 0");
         uint256 rewardCoinSub = rewardCoinIndex[coinAddress];
 
         require(
