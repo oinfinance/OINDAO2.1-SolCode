@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.5.0 <=0.7.0;
+pragma solidity 0.5.16;
 
 import "./SafeMath.sol";
 import "./Owned.sol";
@@ -127,7 +127,7 @@ contract Dparam is Owned, WhiteList, IDparam {
      * @return The value of Checking
      */
     function isUpperLimit(uint256 totalCoin) external view returns (bool) {
-        return totalCoin <= coinUpperLimit;
+        return totalCoin > coinUpperLimit;
     }
     
        /**

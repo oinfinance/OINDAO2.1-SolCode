@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.5.0 <0.8.0;
+pragma solidity 0.5.16;
 pragma experimental ABIEncoderV2;
 
 import "./Math.sol";
@@ -381,7 +381,6 @@ contract OinStake is Owned, WhiteList {
                 rewardCoins[i].index = rewardCoins[i].index.add(ratio);
                 rewardCoins[i].blockNumber = blockNumber;
             } else {
-                rewardCoins[i].index = rewardCoins[i].index;
                 rewardCoins[i].blockNumber = blockNumber;
             }
             emit IndexUpdate(deltBlock, blockNumber, rewardCoins[i].index);
