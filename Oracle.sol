@@ -67,11 +67,4 @@ contract Oracle is Owned, WhiteList {
             emit OracleUpdate(val, time);
         }
     }
-
-    /**
-     * @notice Anybody can read the oracle price 查询当前的喂价值
-     */
-    function peek() public view returns (uint256) {
-        return val;
-    }
 }
